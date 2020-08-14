@@ -1,41 +1,32 @@
-def encrypt message, shift
-  chars = message.split ''
-  shifted_chars = chars.map do |char|
-    shifted_char_code = get_shifted_code(char, shift)
-    shifted_char_code.chr
+# frozen_string_literal: true
+
+# Caesar Cipher class
+class CaesarCipher
+  def encrypt(message, shift)
+    exit unless valid_chars?(message)
+    chars = message.split ''
+    chars.map { |char| get_shifted_code(char, shift).chr }.join
   end
-  shifted_chars.join
-end
 
-def get_shifted_code char, shift
-  char_code = char.ord
+  private
 
-  case
-  when char_code >= 65 && char_code <= 90
-    min = 65
+  def get_shifted_code(char, shift)
+    char_code = char.ord
+    min = get_min(char_code)
     position_from_min = char_code - min
     position_from_alphabet = (position_from_min + shift) % 26
-    char_code = position_from_alphabet + min 
-  when char_code >= 97 && char_code <= 122
-    min = 97
-    position_from_min = char_code - min
-    position_from_alphabet = (position_from_min + shift) % 26
-    char_code = position_from_alphabet + min
+    position_from_alphabet + min
   end
-  char_code
-end
 
-print "Enter your message to be encrypted or \"/stop/\" to stop: "
-message = gets.chomp
+  def get_min(char_code)
+    char_code >= 65 && char_code <= 90 ? 65 : 97
+  end
 
-until message == "/stop/" do
-  print "enter shift: "
-  shift = gets.chomp
-  next if shift.to_i == 0 
-
-  shift = shift.to_i
-  puts "Encrypted: #{encrypt message, shift}"
-
-  print "Enter your message to be encrypted or \"/stop/\" to stop: "
-  message = gets.chomp
+  def valid_chars?(string)
+    string.split('').all? do |char|
+      valid = (char.ord >= 65 && char.ord <= 90) || (char.ord >= 97 && char.ord <= 122)
+      puts "#{char} isn't in the alphabet" unless valid
+      valid
+    end
+  end
 end
